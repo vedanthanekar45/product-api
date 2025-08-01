@@ -16,5 +16,22 @@
     "name": "Desk",
     "price": 900,
     "description": "Nice little desk"
+  },
+  {
+    "id": "6462340d-879b-42ad-9e5b-945431174404",
+    "name": "Desk",
+    "price": "Ninety",
+    "description": "Nice little desk"
+  },
+  {
+    "id": "95ff31d0-8b71-4d50-8385-442ed5625917",
+    "name": "Desk",
+    "price": "Ninety",
+    "description": "Nice little desk"
+  },
+  {
+    "id": "4339b3ec-1ae4-44e2-8b9d-d03a3b49a80d",
+    "price": 900,
+    "description": "Nice little desk"
   }
 ]

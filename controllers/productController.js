@@ -39,6 +39,15 @@ export const getProduct = async (req, res) => {
 export const addProduct = async (req, res) => {
     try {
         const { name, price, description } = req.body
+
+        if (!name) {
+            res.status(400).json({"message": "Please enter a name!"})
+        }
+        if (isNaN(price)) {
+            res.status(400).json({"message": "Price must be a number!"})
+        }
+
+
         const newProduct = {
             id: randomUUID(),
             name,
