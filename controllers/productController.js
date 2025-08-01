@@ -1,32 +1,16 @@
 import { randomUUID } from "crypto"
-import path from "path"
 import fs from "fs"
-import { fileURLToPath } from "url";
-export let product = []
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const productsFilePath = path.join(__dirname, '../products.json');
-
-const readDataFromFile = () => {
-    try {
-        const data = fs.readFileSync(productsFilePath, 'utf8')
-        return JSON.parse(data)
-    } catch (error) {
-        return []
-    }
+const readDataFromFile = (path) => {
+    const fileContent = fs.readFileSync(path, 'utf8');
+    let products = JSON.parse(fileContent);
+    return products
 }
 
-const writeDataToFile = (data) => {
-    fs.writeFileSync(productsFilePath, JSON.stringify(data, null, 2))
-};
-
-let products = readDataFromFile();
 
 export const getAllProducts = async (req, res) => {
     try {
-        res.json(products)
+        res.json(readDataFromFile('./products.json'))
     } catch (error) {
         console.log("Error in getAllProducts controller: ", error.message)
         return res.status(500).json({ error: "Internal Server Error" })
@@ -37,7 +21,8 @@ export const getAllProducts = async (req, res) => {
 export const getProduct = async (req, res) => {
     try {
         const { id } = req.params
-        const product = products.find((p) => p.id === id)
+        const product_list = readDataFromFile('./products.json')
+        const product = product_list.find((p) => p.id === id)
 
         if (!product) {
             return res.status(404).send('Product not found');
@@ -60,10 +45,20 @@ export const addProduct = async (req, res) => {
             price,
             description
         }
-        product.push(newProduct);
-        writeDataToFile(products);
+        let product_list = readDataFromFile('./products.json')
+
+
+        product_list.push(newProduct);
+        const updatedData = JSON.stringify(product_list, null, 2);
+        fs.writeFileSync('./products.json', updatedData, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        })
+
+
         res.status(201).json({
-            "message": "New product successfully added!"
+            "message": "New product successfully added!",
         })
 
     } catch (error) {
@@ -78,14 +73,11 @@ export const updateProduct = async (req, res) => {
         const { id } = req.params
         const { name, price, description } = req.body
 
-        const productIndex = products.findIndex((p) => p.id === id);
+        let product_list = readDataFromFile('./products.json')
+        const productIndex = product_list.findIndex((p) => p.id === id);
 
         if (productIndex === -1) {
             return res.status(404).send('Product not found');
-        }
-
-        if (!name || !price || !description) {
-            return res.status(400).send('Name, price, and description are required.');
         }
 
         const updatedProduct = {
@@ -95,11 +87,15 @@ export const updateProduct = async (req, res) => {
             description,
         };
 
-        products[productIndex] = updatedProduct;
+        product_list[productIndex] = updatedProduct;
+        const updatedData = JSON.stringify(product_list, null, 2);
+        fs.writeFileSync('./products.json', updatedData, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        })
 
-        writeDataToFile(products);
-
-        res.json(updatedProduct);
+        res.status(200).json(updatedProduct);
 
     } catch (error) {
         console.log("Error in updateProduct controller: ", error.message)
@@ -109,14 +105,25 @@ export const updateProduct = async (req, res) => {
 
 
 export const deleteProduct = (req, res) => {
-  const { id } = req.params;
+    try {
 
-  const productExists = products.find((p) => p.id === id);
-  if (!productExists) {
-    return res.status(404).send('Product not found');
-  }
-  products = products.filter((p) => p.id !== id);
-  writeDataToFile(products);
+        const { id } = req.params;
+        let product_list = readDataFromFile('./products.json')
+        const productExists = product_list.find((p) => p.id === id);
 
-  res.status(204).send();
+        product_list = product_list.filter((p) => p.id !== id);
+        const updatedData = JSON.stringify(product_list, null, 2);
+        
+        fs.writeFile('./products.json', updatedData, function (err) {
+            if (err) {
+                return console.log(err);
+            }
+        })
+        console.log(updatedData)
+        res.status(204).send();
+
+    } catch (error) {
+        console.log("Error in deleteProduct controller: ", error.message)
+        return res.status(500).json({ error: "Internal Server Error" })
+    }
 };
