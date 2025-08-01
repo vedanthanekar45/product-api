@@ -4,5 +4,17 @@
     "name": "Chair",
     "price": 300,
     "description": "Normal Chair"
+  },
+  {
+    "id": "5ef6ee08-bd96-49bb-8309-01080d7b57cd",
+    "name": "Bag",
+    "price": 300,
+    "description": "Normal Bag"
+  },
+  {
+    "id": "10ed2384-8f9e-4fd1-b349-ccf53bebcfb1",
+    "name": "Desk",
+    "price": 900,
+    "description": "Nice little desk"
   }
 ]

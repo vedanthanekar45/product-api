@@ -109,11 +109,10 @@ export const deleteProduct = (req, res) => {
 
         const { id } = req.params;
         let product_list = readDataFromFile('./products.json')
-        const productExists = product_list.find((p) => p.id === id);
 
         product_list = product_list.filter((p) => p.id !== id);
         const updatedData = JSON.stringify(product_list, null, 2);
-        
+
         fs.writeFile('./products.json', updatedData, function (err) {
             if (err) {
                 return console.log(err);
@@ -127,3 +126,28 @@ export const deleteProduct = (req, res) => {
         return res.status(500).json({ error: "Internal Server Error" })
     }
 };
+
+
+
+export const searchProduct = (req, res) => {
+    try {
+        const { name } = req.query
+
+        let product_list = readDataFromFile('./products.json')
+        if (!name) {
+            return res.json(product_list);
+        }
+        let filteredProducts;
+
+        if (name) {
+            filteredProducts = product_list.filter((product) =>
+                product.name.toLowerCase().includes(name.toLowerCase())
+            )
+        }
+        res.json(filteredProducts)
+
+    } catch (error) {
+        console.log("Error in searchProduct controller: ", error.message)
+        return res.status(500).json({ error: "Internal Server Error" })
+    }
+}
